@@ -4,7 +4,8 @@
 
 AttentionX automatically extracts emotional highlights from long videos and converts them into vertical, captioned short clips optimized for TikTok, Instagram Reels, and YouTube Shorts.
 
-![AttentionX Interface](image.png)
+<img width="1852" height="868" alt="image" src="https://github.com/user-attachments/assets/08fb202d-7f16-4fef-81d7-19a8094942cf" />
+
 
 ---
 
