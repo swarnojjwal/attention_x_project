@@ -1,0 +1,8 @@
+﻿.env
+venv/
+__pycache__/
+*.pyc
+captioned_clips/
+vertical_clips/
+emotional_clips/
+hooked_clips/

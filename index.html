@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>AttentionX | Smart Clip Factory</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="dashboard">
+  <div class="header">
+    <div class="logo">
+      <h1><i class="fas fa-bolt"></i> ATTENTION<span style="font-weight:400">X</span></h1>
+      <p>Automated Content Repurposing Engine</p>
+    </div>
+    <div class="status-pill" id="engineStatusPanel">
+      <span class="active-dot"></span>
+      <span>ENGINE STATUS: <strong id="engineStatusText">—</strong></span>
+      <span class="engine-badge"><i class="fas fa-microchip"></i> ACTIVE</span>
+    </div>
+  </div>
+
+  <!-- MEDIA SOURCE & SEGMENT INFO -->
+  <div class="media-card">
+    <div class="media-info">
+      <span><i class="fas fa-video"></i> MEDIA SOURCE</span>
+      <span class="source-badge" id="mediaSource">avengers_clip.mp4</span>
+      <span><i class="fas fa-database"></i> <span id="fileSize">31.83 MB</span> · <span id="fileStatus">READY</span></span>
+    </div>
+    <div class="segment-highlight" id="segmentBlock">
+      <div><i class="fas fa-scissors"></i> SEGMENT ISOLATED</div>
+      <div class="hook-text" id="hookText">Loading hook...</div>
+      <div class="timestamp" id="segmentTiming">--:-- / --:--</div>
+      <div class="energy-type" style="margin-top: 8px;"><i class="fas fa-chart-line"></i> <span id="energyTypeTag">High stakes & intellectual dread</span></div>
+    </div>
+    <div class="media-info" style="margin-top: 6px;">
+      <span><i class="fas fa-chart-simple"></i> Max 60s per clip · Smart cropping ready</span>
+    </div>
+  </div>
+
+  <!-- CLIPS SECTION -->
+  <h2 style="margin: 0.5rem 0 1rem 0;"><i class="fas fa-film"></i> EMOTIONAL CLIPS · SMART CROP</h2>
+  <div class="clips-grid" id="clipsContainer">
+    <div style="text-align: center; grid-column: 1/-1;">Loading clips...</div>
+  </div>
+  <div class="footer">
+    <i class="fas fa-sync-alt"></i> Real-time sync with backend · <span id="lastUpdate"></span>
+  </div>
+</div>
+
+<script>
+  // -------------------------------
+  //  FRONTEND – CONNECTS TO BACKEND API
+  //  Expected endpoints:
+  //  GET /api/engine/status   -> { status, media, activeSegment }
+  //  GET /api/clips           -> array of clips
+  //  If backend not reachable, mock data is shown (fallback).
+  // -------------------------------
+  const API_BASE = '/api';   // change to actual backend url if needed
+
+  async function fetchJSON(url, fallbackData) {
+    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000);
+      const res = await fetch(url, { signal: controller.signal });
+      clearTimeout(timeoutId);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    } catch (err) {
+      console.warn(`API ${url} failed:`, err);
+      return fallbackData;
+    }
+  }
+
+  const MOCK_STATUS = {
+    status: "ACTIVE",
+    media: { name: "avengers_clip.mp4", size_mb: 31.83, ready: true },
+    activeSegment: {
+      start: "8:16",
+      end: "9:00",
+      hookText: "Three words that changed EVERYTHING. 🎵 'On your left...'",
+      energyType: "High stakes and intellectual dread"
+    }
+  };
+
+  const MOCK_CLIPS = [
+    {
+      id: 1,
+      start: "0:18",
+      end: "0:58",
+      quote: "Why Thanos was the most TERRIFYING villain ever... 😱",
+      energyType: "High stakes and intellectual dread",
+      cropAlignment: "Centered",
+      emoji: "😱"
+    },
+    {
+      id: 2,
+      start: "4:35",
+      end: "5:15",
+      quote: "WE FINALLY SAW IT! Captain America lifts the hammer! 🏅‍♂️",
+      energyType: "Pure hype and cinematic payoff",
+      cropAlignment: "Centered",
+      emoji: "🏅‍♂️"
+    },
+    {
+      id: 3,
+      start: "8:16",
+      end: "9:00",
+      quote: "The portal scene - AVENGERS ASSEMBLE! ⚡",
+      energyType: "Epic climax & emotional release",
+      cropAlignment: "Centered",
+      emoji: "⚡"
+    },
+    {
+      id: 4,
+      start: "12:05",
+      end: "12:48",
+      quote: "I am Iron Man (snap) ... devastating silence",
+      energyType: "Tragic heroism",
+      cropAlignment: "Centered",
+      emoji: "💔"
+    }
+  ];
+
+  function updateStatusUI(data) {
+    const statusElem = document.getElementById('engineStatusText');
+    if (data.status) statusElem.innerText = data.status;
+    const mediaSourceSpan = document.getElementById('mediaSource');
+    if (data.media && data.media.name) mediaSourceSpan.innerText = data.media.name;
+    if (data.media && data.media.size_mb) document.getElementById('fileSize').innerText = data.media.size_mb + ' MB';
+    if (data.media && data.media.ready) document.getElementById('fileStatus').innerText = 'READY';
+    if (data.activeSegment) {
+      document.getElementById('hookText').innerHTML = data.activeSegment.hookText;
+      document.getElementById('segmentTiming').innerHTML = `${data.activeSegment.start} - ${data.activeSegment.end}`;
+      if (data.activeSegment.energyType) document.getElementById('energyTypeTag').innerText = data.activeSegment.energyType;
+    }
+  }
+
+  function renderClips(clips) {
+    const container = document.getElementById('clipsContainer');
+    if (!clips || clips.length === 0) {
+      container.innerHTML = '<div style="grid-column:1/-1; text-align:center;">✨ No clips generated yet. Run emotional detection.</div>';
+      return;
+    }
+    container.innerHTML = '';
+    clips.forEach(clip => {
+      const card = document.createElement('div');
+      card.className = 'clip-card';
+      card.innerHTML = `
+        <div class="clip-header">
+          <span class="clip-title"><i class="fas fa-cut"></i> CLIP ${clip.id}</span>
+          <span class="timestamp">${clip.start} - ${clip.end}</span>
+        </div>
+        <div class="quote">“${clip.quote}”</div>
+        <div><span class="energy-tag"><i class="fas fa-bolt"></i> ${clip.energyType}</span></div>
+        <div class="crop-badge"><i class="fas fa-arrows-alt"></i> CROP ALIGNMENT: ${clip.cropAlignment}</div>
+        <div style="margin-top: 12px;"><i class="fas fa-expand-alt"></i> 9:16 smart crop ready</div>
+      `;
+      container.appendChild(card);
+    });
+  }
+
+  async function fetchAllData() {
+    const statusData = await fetchJSON(`${API_BASE}/engine/status`, MOCK_STATUS);
+    updateStatusUI(statusData);
+    const clipsData = await fetchJSON(`${API_BASE}/clips`, MOCK_CLIPS);
+    renderClips(clipsData);
+    document.getElementById('lastUpdate').innerHTML = `last sync: ${new Date().toLocaleTimeString()}`;
+  }
+
+  fetchAllData();
+  setInterval(fetchAllData, 30000);
+</script>
+</body>
+</html>
