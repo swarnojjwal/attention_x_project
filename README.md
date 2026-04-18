@@ -99,4 +99,3 @@ OpenCV + MoviePy
 
 License
 This project is for educational and personal use.
-text
