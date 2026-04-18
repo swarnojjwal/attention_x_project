@@ -50,17 +50,22 @@ Set up API keys (for hook generation):Create a .env file in the root directory:e
 
 
 Project Structure
-textattentionx/
-├── detect_emotional_peaks.py
-├── extract_clips.py
-├── smart_crop_vertical.py
-├── add_karaoke_captions.py
-├── add_hook_overlay.py
-├── final_render.py
-├── avengers_clip.mp4          # Sample input video
-├── audio.wav                  # Extracted audio
-├── .env                       # API keys (git ignored)
-└── output folders (auto-created)
+attention_x_project/
+├── .env                        # API keys (git-ignored)
+├── audio.wav                   # Extracted audio (Stage 2 input)
+├── avengers_clip.mp4           # Source video
+├── detect_emotional_peaks.py   # Stage 2
+├── extract_clips.py            # Stage 3
+├── smart_crop_vertical.py      # Stage 4
+├── add_karaoke_captions.py     # Stage 5
+├── add_hook_overlay.py         # Stage 6
+├── final_render.py             # Stage 7
+├── emotional_clips/            # Stage 3 output
+├── vertical_clips/             # Stage 4 output
+├── captioned_clips/            # Stage 5 output
+├── hooked_clips/               # Stage 6 output
+├── final_clips/                # Stage 7 output
+└── emotional_clips.zip         # Final downloadable archive
 
 How to Use
 
