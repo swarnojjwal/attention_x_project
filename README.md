@@ -7,7 +7,8 @@ AttentionX automatically extracts emotional highlights from long videos and conv
 <img width="1907" height="909" alt="image" src="https://github.com/user-attachments/assets/202ce191-23ad-45ce-b3bd-114e7b8886a4" />
 
 
-
+## 🎥 Live Demo
+https://drive.google.com/file/d/196egVuqPC5_pUMTe_0FkIwfdz1CqojJK/view?usp=sharing
 
 ---
 
